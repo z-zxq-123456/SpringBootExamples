@@ -97,7 +97,7 @@ public class ElasticsearchUtilsTest {
 
         map.put("name", "鹏磊");
         map.put("age", 11);
-        map.put("interests", new String[]{"阅读", "学习"});
+        map.put("interests", new String[]{"阅读"});
         map.put("about", "这条数据被修改");
         map.put("processTime", new Date());
 
@@ -114,6 +114,7 @@ public class ElasticsearchUtilsTest {
      */
     @Test
     public void searchDataByIdTest() {
+//        Map<String, Object> map = ElasticsearchUtils.searchDataById("ymq_index", "about_test", "id=11", "name,interests");
         Map<String, Object> map = ElasticsearchUtils.searchDataById("ymq_index", "about_test", "id=11", null);
         System.out.println(JSONObject.toJSONString(map));
     }

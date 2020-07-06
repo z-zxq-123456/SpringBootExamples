@@ -2,7 +2,7 @@ package io.ymq.example.elasticsearch.config;
 
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class ElasticsearchConfig {
                     .build();
 
             transportClient = new PreBuiltTransportClient(esSetting);
-            InetSocketTransportAddress inetSocketTransportAddress = new InetSocketTransportAddress(InetAddress.getByName(hostName), Integer.valueOf(port));
+            TransportAddress inetSocketTransportAddress = new TransportAddress(InetAddress.getByName(hostName), Integer.valueOf(port));
             transportClient.addTransportAddresses(inetSocketTransportAddress);
 
         } catch (Exception e) {

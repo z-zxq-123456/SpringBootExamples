@@ -4,7 +4,6 @@ package io.ymq.example.elasticsearch.utils;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -14,6 +13,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.text.Text;
@@ -78,8 +78,8 @@ public class ElasticsearchUtils {
         if (!isIndexExist(index)) {
             LOGGER.info("Index is not exits!");
         }
-        DeleteIndexResponse dResponse = client.admin().indices().prepareDelete(index).execute().actionGet();
-        if (dResponse.isAcknowledged()) {
+       AcknowledgedResponse dResponse =  client.admin().indices().prepareDelete(index).execute().actionGet();
+       if (dResponse.isAcknowledged()) {
             LOGGER.info("delete index " + index + "  successfully!");
         } else {
             LOGGER.info("Fail to delete index " + index);
@@ -456,11 +456,12 @@ public class ElasticsearchUtils {
         StringBuffer stringBuffer = new StringBuffer();
 
         for (SearchHit searchHit : searchResponse.getHits().getHits()) {
-            searchHit.getSource().put("id", searchHit.getId());
+
+            searchHit.getSourceAsMap().put("id", searchHit.getId());
 
             if (StringUtils.isNotEmpty(highlightField)) {
 
-                System.out.println("遍历 高亮结果集，覆盖 正常结果集" + searchHit.getSource());
+                System.out.println("遍历 高亮结果集，覆盖 正常结果集" + searchHit.getSourceAsString());
                 Text[] text = searchHit.getHighlightFields().get(highlightField).getFragments();
 
                 if (text != null) {
@@ -468,10 +469,10 @@ public class ElasticsearchUtils {
                         stringBuffer.append(str.string());
                     }
                     //遍历 高亮结果集，覆盖 正常结果集
-                    searchHit.getSource().put(highlightField, stringBuffer.toString());
+                    searchHit.getSourceAsMap().put(highlightField, stringBuffer.toString());
                 }
             }
-            sourceList.add(searchHit.getSource());
+            sourceList.add(searchHit.getSourceAsMap());
         }
 
         return sourceList;
